@@ -1,44 +1,36 @@
-import * as React from 'react';
-import {useEffect, useRef, useState} from 'react';
-import S from './Post.module.css'
-import {Item} from "./item/Item";
+import React, {useEffect, useState} from 'react';
+import ListComponent from "./list/List";
 import {useGetPostQuery} from "../../redux";
+import S from './Home.module.css'
 
-export const Home = () => {
-    const lastElement = useRef()
-    const observerRef = useRef()
-    const [count, setCount] = useState(10)
+
+const Home = () => {
+    const [count, setCount] = useState(20)
     const {data = [], isLoading} = useGetPostQuery(count)
-    console.log(data)
-
-    let options = {
-        rootMargin: "150px",
-        threshold: 1.0,
-    };
+    const moreItemsLoading = false
+    const [hasNextPage, setHasNextPage] = useState(true)
     useEffect(() => {
-        const callback = (entries) => {
-            if (entries[0].isIntersecting) {
-                setCount(prevState => prevState + 10)
-            }
+        if (count === 100) {
+            setHasNextPage(false)
         }
+    }, [data])
 
-        observerRef.current = new IntersectionObserver(callback,options);
-        if (lastElement.current) {
 
-            observerRef.current.observe(lastElement.current)
-        }
-    }, [isLoading])
+    const loadMore = () => {
+        setCount(prevState => prevState + 10)
+    }
 
-    if (isLoading) return <h1>Loading...</h1>
+    if (isLoading) return <h1 className={S.titile}>Loading...</h1>
     return (
-        <div className="App">
-            {data.map(el => (
-                <Item data={el} key={el.id}/>
-            ))}
-            <div ref={lastElement} className={S.observer}></div>
-            <button onClick={() => {
-                setCount(prevState => prevState + 10)
-            }}></button>
+        <div className={'App'}>
+            <ListComponent
+                items={data}
+                moreItemsLoading={moreItemsLoading}
+                loadMore={loadMore}
+                hasNextPage={hasNextPage}
+            />
         </div>
     );
-};
+}
+
+export default Home;

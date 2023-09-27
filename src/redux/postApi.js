@@ -7,7 +7,10 @@ export const postApi = createApi({
         getPost: build.query({
             query: (limit) => `posts?_limit= ${limit}`,
         }),
+        getPostId: build.query({
+            query: (id) => `posts/${id}`,
+        })
     })
 });
 
-export const {useGetPostQuery} = postApi;
+export const {useGetPostQuery, useGetPostIdQuery} = postApi;

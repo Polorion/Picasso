@@ -1,11 +1,9 @@
 import * as React from 'react';
 import S from './Item.module.css'
+import {Link} from "react-router-dom";
 
 export const Item = (props) => {
-    const onChange = (e, id) => {
-        e.preventDefault()
-        console.log(id)
-    }
+
     const {id, title, body} = props.data
     return (
         <div className={S.body}>
@@ -14,10 +12,7 @@ export const Item = (props) => {
                 <div className={S.number}>{id}</div>
                 <div className={S.text}>{body}</div>
             </div>
-            <button onClick={(e) => {
-                onChange(e, id)
-            }} className={S.btn}>просмотр
-            </button>
+            <Link className={S.btn} to={`post/${props.data.id}`}>Просмотр</Link>
         </div>
     );
 };
