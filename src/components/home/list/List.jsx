@@ -13,7 +13,7 @@ const ListComponent = ({items, loadMore, hasNextPage}) => {
     };
 
     const itemCount = hasNextPage ? items.length + 1 : items.length;
-
+    const height = window.innerHeight
     return (
         <InfiniteLoader
             isItemLoaded={index => index < items.length}
@@ -22,7 +22,7 @@ const ListComponent = ({items, loadMore, hasNextPage}) => {
         >
             {({onItemsRendered, ref}) => (
                 <FixedSizeList
-                    height={500}
+                    height={height - 10}
                     width={500}
                     itemCount={itemCount}
                     itemSize={120}
