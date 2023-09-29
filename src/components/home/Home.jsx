@@ -1,34 +1,31 @@
 import React, {useEffect, useState} from 'react';
-import ListComponent from "./list/List";
 import {useGetPostQuery} from "../../redux";
 import S from './Home.module.css'
+import {List} from "./list/List";
 
 
 const Home = () => {
-    const [count, setCount] = useState(20)
-    const {data = [], isLoading} = useGetPostQuery(count)
-    const moreItemsLoading = false
-    const [hasNextPage, setHasNextPage] = useState(true)
+
+    const [page, setPage] = useState(1)
+    const [post, setPost] = useState([])
+    const {data = [], isLoading, ...isFetching} = useGetPostQuery(page)
+    const addPost = (data) => {
+        setPost(prevState => [...prevState, ...data])
+    }
+    console.log('render')
     useEffect(() => {
-        if (count === 100) {
-            setHasNextPage(false)
-        }
+        addPost(data)
     }, [data])
 
-
-    const loadMore = () => {
-        setCount(prevState => prevState + 10)
+    const nextPage = () => {
+        setPage(prevState => prevState + 1)
     }
+
 
     if (isLoading) return <h1 className={S.titile}>Loading...</h1>
     return (
         <div className={'App'}>
-            <ListComponent
-                items={data}
-                moreItemsLoading={moreItemsLoading}
-                loadMore={loadMore}
-                hasNextPage={hasNextPage}
-            />
+            <List post={post} nextPage={nextPage}/>
         </div>
     );
 }

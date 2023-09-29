@@ -1,39 +1,55 @@
-import React from 'react';
-import {FixedSizeList} from 'react-window';
-import InfiniteLoader from "react-window-infinite-loader";
-import {Item} from "./item/Item";
+import * as React from 'react';
+import S from './List.module.css'
+import {useEffect, useRef, useState} from "react";
+import {Item} from "../item/Item";
 
-const ListComponent = ({items, loadMore, hasNextPage}) => {
-    const Row = ({index, style}) => {
-        return (
-            <div style={style}>
-                <Item data={items[index]} key={items[index].id}/>
-            </div>)
+export const List = ({post, nextPage}) => {
+    console.log(1)
+    const [start, setStart] = useState(0);
+    const rowHeight = 90
+    const visibleRows = 4
+    const refObserver = useRef()
+    const lastElement = useRef()
 
-    };
+    const getTopHeight = () => {
+        return rowHeight * start;
+    }
 
-    const itemCount = hasNextPage ? items.length + 1 : items.length;
-    const height = window.innerHeight
+    const getBottomHeight = () => {
+        return rowHeight * (post.length - (start + visibleRows + 1));
+    }
+
+    const onScroll = (e) => {
+        setStart(
+            Math.floor(e.target.scrollTop / rowHeight)
+        );
+    }
+    useEffect(() => {
+        const callback = (entries) => {
+            console.log(entries)
+            if (entries[0].isIntersecting) {
+                nextPage()
+            }
+        }
+        let options = {
+            rootMargin: "0px",
+            threshold: 1.0,
+        };
+
+        refObserver.current = new IntersectionObserver(callback, options);
+        refObserver.current.observe(lastElement.current)
+    }, [])
+
     return (
-        <InfiniteLoader
-            isItemLoaded={index => index < items.length}
-            itemCount={itemCount}
-            loadMoreItems={loadMore}
-        >
-            {({onItemsRendered, ref}) => (
-                <FixedSizeList
-                    height={height - 10}
-                    width={500}
-                    itemCount={itemCount}
-                    itemSize={120}
-                    onItemsRendered={onItemsRendered}
-                    ref={ref}
-                >
-                    {Row}
-                </FixedSizeList>
-            )}
-        </InfiniteLoader>
-    )
+        <div style={{height: visibleRows * (rowHeight + 30), overflow: 'auto'}} onScroll={(e) => {
+            onScroll(e)
+        }}
+             className={S.body}>
+            <div style={{height: getTopHeight()}}></div>
+            {post.slice(start, start + visibleRows + 1).map(el =>
+                <Item heightPost={rowHeight} data={el}
+                      key={start + el.title}/>)}
+            <div ref={lastElement} style={{height: getBottomHeight()}}>1231312 lorem</div>
+        </div>
+    );
 };
-
-export default ListComponent;

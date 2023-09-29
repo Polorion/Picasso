@@ -6,7 +6,7 @@ export const Item = (props) => {
 
     const {id, title, body} = props.data
     return (
-        <div className={S.body}>
+        <div style={{height: props.heightPost}} className={S.body}>
             <div className={S.title}>{title}</div>
             <div className={S.content}>
                 <div className={S.number}>{id}</div>
